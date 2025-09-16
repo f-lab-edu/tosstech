@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 
 export default function Header() {
   return (
-    <header className="w-full max-w-[1140px] h-[60px] mx-auto flex justify-between items-center">
+    <header className="w-full max-w-[1140px] h-[60px] mx-auto flex justify-between items-center bg-white">
       <img src={logoSVG} className="h-5 w-[120px]" />
       <div className="flex items-center">
         <div className="mx-2 flex gap-[6px] items-center">

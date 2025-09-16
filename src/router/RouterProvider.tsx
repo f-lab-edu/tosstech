@@ -1,16 +1,30 @@
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { CompiledRoute } from "./type";
+
+type Params = Record<string, string>;
+
+const ParamsContext = createContext<Params>({});
 
 export function RouterProvider({ router }: { router: CompiledRoute[] }) {
   const [Element, setElement] = useState<React.ReactNode>(null);
+  const [params, setParams] = useState<Params>({});
 
   function render(path: string) {
-    const page = router.filter((route) => route.path.test(path));
+    let matched = false;
 
-    if (page.length === 0) {
+    for (const route of router) {
+      const result = route.path.exec(path); // 한 번만 호출
+      if (result) {
+        setParams(result.groups ?? {});
+        setElement(route.element);
+        matched = true;
+        break;
+      }
+    }
+
+    if (!matched) {
+      setParams({});
       setElement(<h1>404 ERROR PAGE</h1>);
-    } else {
-      setElement(page[0].element);
     }
   }
 
@@ -23,5 +37,7 @@ export function RouterProvider({ router }: { router: CompiledRoute[] }) {
     });
   }, []);
 
-  return <>{Element}</>;
+  return (
+    <ParamsContext.Provider value={params}>{Element}</ParamsContext.Provider>
+  );
 }

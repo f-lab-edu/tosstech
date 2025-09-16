@@ -29,11 +29,10 @@ export function RouterProvider({ router }: { router: CompiledRoute[] }) {
   }
 
   useEffect(() => {
-    const path = window.location.pathname;
-    render(path);
+    render(window.location.pathname);
 
     window.addEventListener("popstate", () => {
-      render(path);
+      render(window.location.pathname);
     });
   }, []);
 

@@ -4,9 +4,10 @@ import type { Params } from "./type";
 export function useNavigate() {
   function navigate(path: string) {
     window.history.pushState({}, "", path);
+    window.dispatchEvent(new PopStateEvent("popstate"));
   }
 
-  return { navigate };
+  return navigate;
 }
 
 export const ParamsContext = createContext<Params>({});

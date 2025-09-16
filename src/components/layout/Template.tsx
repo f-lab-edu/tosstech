@@ -9,8 +9,8 @@ export function Template({ children }: { children: React.ReactNode }) {
           <Header />
         </div>
         <div className="pt-[60px]">{children}</div>
-        <Footer />
       </div>
+      <Footer />
     </>
   );
 }

@@ -1,9 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { CompiledRoute } from "./type";
+import { ParamsContext } from "./hooks";
 
 type Params = Record<string, string>;
-
-const ParamsContext = createContext<Params>({});
 
 export function RouterProvider({ router }: { router: CompiledRoute[] }) {
   const [Element, setElement] = useState<React.ReactNode>(null);

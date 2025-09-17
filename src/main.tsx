@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@/router";
 import { createBrowserRouter } from "@/router/api";
 
-import { Home } from "@/pages";
+import { Home, Post } from "@/pages";
 
 import "./index.css";
 
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/post/:id",
-    element: <></>,
+    element: <Post />,
   },
 ]);
 

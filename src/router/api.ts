@@ -2,7 +2,6 @@ import type { CompiledRoute, Route } from "./type";
 
 function pathToRegex(path: string): RegExp {
   const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // const pattern = "^" + escaped.replace(/\/:([^/]+)/g, "/[^/]+") + "$";
   const pattern =
     "^" +
     escaped.replace(/\/:([^/]+)/g, (_m, name) => `/(?<${name}>[^/]+)`) +

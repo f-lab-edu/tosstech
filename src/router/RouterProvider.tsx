@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import type { CompiledRoute } from "./type";
+import type { CompiledRoute, Params } from "./type";
 import { ParamsContext } from "./hooks";
-
-type Params = Record<string, string>;
 
 export function RouterProvider({ router }: { router: CompiledRoute[] }) {
   const [Element, setElement] = useState<React.ReactNode>(null);
@@ -30,9 +28,15 @@ export function RouterProvider({ router }: { router: CompiledRoute[] }) {
   useEffect(() => {
     render(window.location.pathname);
 
-    window.addEventListener("popstate", () => {
+    const onPopState = () => {
       render(window.location.pathname);
-    });
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
   }, []);
 
   return (

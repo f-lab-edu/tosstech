@@ -1,13 +1,13 @@
 import type { MatchedRouteMetadata, Params, Route } from "./type";
 import { pathToRegex } from "./utils";
 
-export class Router {
-  private routes: Route[];
-  private element: React.ReactNode;
+export class Router<T> {
+  private routes: Route<T>[];
+  private element: T | null;
   private params: Params;
-  private render: (element: React.ReactNode) => void;
+  private render: (element: T) => void;
 
-  constructor(routes: Route[], render: (element: React.ReactNode) => void) {
+  constructor(routes: Route<T>[], render: (element: T) => void) {
     this.routes = routes;
     this.element =
       this.getMatchedRoute(window.location.pathname)?.element ?? null;
@@ -20,7 +20,7 @@ export class Router {
     });
   }
 
-  private getMatchedRoute(path: string): MatchedRouteMetadata | null {
+  private getMatchedRoute(path: string): MatchedRouteMetadata<T> | null {
     for (const route of this.routes) {
       const pathRegex = pathToRegex(route.path);
       const matched = pathRegex.exec(path);
@@ -42,8 +42,8 @@ export class Router {
       this.render(this.element);
     } else {
       this.params = {};
-      this.element = <h1>404 ERROR PAGE</h1>;
-      this.render(this.element);
+      this.element = null;
+      this.render(this.element!);
     }
   }
 
@@ -58,9 +58,5 @@ export class Router {
 
   public getParams(): Params {
     return this.params;
-  }
-
-  public getElement(): React.ReactNode {
-    return this.element;
   }
 }

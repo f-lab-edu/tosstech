@@ -22,4 +22,4 @@ const render = (element: React.ReactNode) => {
   root.render(<StrictMode>{element}</StrictMode>);
 };
 
-export const router = new Router(routes, render);
+export const router = new Router<React.ReactNode>(routes, render);

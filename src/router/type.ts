@@ -1,6 +1,6 @@
-export interface Route {
+export interface Route<T> {
   path: string;
-  element: React.ReactNode;
+  element: T;
 }
 
 export interface Router {
@@ -9,14 +9,14 @@ export interface Router {
   back: () => void;
 }
 
-export interface CompiledRoute {
+export interface CompiledRoute<T> {
   path: RegExp;
-  element: React.ReactNode;
+  element: T;
 }
 
 export type Params = Record<string, string>;
 
-export interface MatchedRouteMetadata {
+export interface MatchedRouteMetadata<T> {
   params: Params;
-  element: React.ReactNode;
+  element: T;
 }

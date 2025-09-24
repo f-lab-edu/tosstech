@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { getPostList, type Post } from "@/entities/post";
-import { useRouter } from "@/router/context";
+import { router } from "@/main";
 
 export function PostList() {
-  const { navigate } = useRouter();
+  const { navigate } = router;
 
   const [posts, setPosts] = useState<Post[] | null>(null);
 

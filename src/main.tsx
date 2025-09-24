@@ -1,9 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import { RouterProvider } from "@/router";
-
 import { Home, Post } from "@/pages";
+import { Router } from "@/router";
 
 import "./index.css";
 
@@ -18,8 +17,9 @@ const routes = [
   },
 ];
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider routes={routes} />
-  </StrictMode>
-);
+const root = createRoot(document.getElementById("root")!);
+const render = (element: React.ReactNode) => {
+  root.render(<StrictMode>{element}</StrictMode>);
+};
+
+export const router = new Router(routes, render);

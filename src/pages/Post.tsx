@@ -1,10 +1,11 @@
-import { Template } from "@/components/layout/Template";
-import { getPostById, type PostDetail } from "@/entities/post";
-import { useRouter } from "@/router/context";
 import { useEffect, useState } from "react";
 
+import { Template } from "@/components/layout/Template";
+import { getPostById, type PostDetail } from "@/entities/post";
+import { router } from "@/main";
+
 export function Post() {
-  const { params } = useRouter();
+  const params = router.getParams();
   const [data, setData] = useState<PostDetail | null>(null);
 
   useEffect(() => {

@@ -15,3 +15,8 @@ export interface CompiledRoute {
 }
 
 export type Params = Record<string, string>;
+
+export interface MatchedRouteMetadata {
+  params: Params;
+  element: React.ReactNode;
+}

@@ -1,3 +1,3 @@
-import { RouterProvider } from "./RouterProvider";
+import { Router } from "./Router";
 
-export { RouterProvider };
+export { Router };

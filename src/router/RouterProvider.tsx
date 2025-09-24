@@ -1,45 +1,99 @@
-import { useEffect, useState } from "react";
-import type { CompiledRoute, Params } from "./type";
-import { ParamsContext } from "./hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RouterContext } from "./context";
+import type { Route, Router } from "./type";
+import { pathToRegex } from "./utils";
 
-export function RouterProvider({ router }: { router: CompiledRoute[] }) {
-  const [Element, setElement] = useState<React.ReactNode>(null);
-  const [params, setParams] = useState<Params>({});
+type Params = Record<string, string>;
 
-  function render(path: string) {
-    let matched = false;
+interface MatchedRouteMetadata {
+  params: Params;
+  element: React.ReactNode;
+}
 
-    for (const route of router) {
-      const result = route.path.exec(path); // 한 번만 호출
-      if (result) {
-        setParams(result.groups ?? {});
-        setElement(route.element);
-        matched = true;
-        break;
-      }
-    }
+function getMatchedRoute(
+  pathname: string,
+  routes: Route[]
+): MatchedRouteMetadata | null {
+  for (const route of routes) {
+    const pathRegex = pathToRegex(route.path);
+    const matched = pathRegex.exec(pathname);
 
-    if (!matched) {
-      setParams({});
-      setElement(<h1>404 ERROR PAGE</h1>);
+    if (matched) {
+      return {
+        params: matched.groups ?? {},
+        element: route.element,
+      };
     }
   }
 
+  return null;
+}
+
+export function RouterProvider({ routes }: { routes: Route[] }) {
+  const [Element, setElement] = useState<React.ReactNode>(
+    getMatchedRoute(window.location.pathname, routes)?.element ?? null
+  );
+  const [params, setParams] = useState<Params>({});
+
+  const update = usePreservedCallback((path: string) => {
+    const matched = getMatchedRoute(path, routes);
+
+    if (matched) {
+      setParams(matched.params);
+      setElement(matched.element);
+    } else {
+      setParams({});
+      setElement(<h1>404 ERROR PAGE</h1>);
+    }
+  });
+
   useEffect(() => {
-    render(window.location.pathname);
+    const abortController = new AbortController();
 
-    const onPopState = () => {
-      render(window.location.pathname);
-    };
+    window.addEventListener(
+      "popstate",
+      () => {
+        update(window.location.pathname);
+      },
+      {
+        signal: abortController.signal,
+      }
+    );
 
-    window.addEventListener("popstate", onPopState);
+    return () => abortController.abort();
+  }, [update]);
 
-    return () => {
-      window.removeEventListener("popstate", onPopState);
-    };
+  const navigate = useCallback(
+    (path: string) => {
+      window.history.pushState(null, "", path);
+      update(path);
+    },
+    [update]
+  );
+
+  const back = useCallback(() => {
+    window.history.back();
   }, []);
 
-  return (
-    <ParamsContext.Provider value={params}>{Element}</ParamsContext.Provider>
+  const router = useMemo<Router>(
+    () => ({
+      params,
+      navigate,
+      back,
+    }),
+    [params, navigate, back]
   );
+
+  return <RouterContext value={router}>{Element}</RouterContext>;
+}
+
+function usePreservedCallback<Fn extends (path: string) => unknown>(
+  callback: Fn
+) {
+  const ref = useRef(callback);
+  ref.current = callback;
+
+  return useCallback((path: string) => {
+    return ref.current(path);
+  }, []);
 }

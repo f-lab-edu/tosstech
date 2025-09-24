@@ -3,6 +3,12 @@ export interface Route {
   element: React.ReactNode;
 }
 
+export interface Router {
+  params: Params;
+  navigate: (path: string) => void;
+  back: () => void;
+}
+
 export interface CompiledRoute {
   path: RegExp;
   element: React.ReactNode;

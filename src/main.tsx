@@ -1,25 +1,27 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-
-import { Home, Post } from "@/pages";
-import { Router } from "@/router";
+import { Outlet } from "./router/react/Outlet";
+import { ReactRouter } from "./router/react/Router";
+import { RouterContext } from "./router/react/context";
 
 import "./index.css";
 
-const routes = [
+export const router = new ReactRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <h1>Home</h1>,
   },
   {
     path: "/post/:id",
-    element: <Post />,
+    element: <h1>Post</h1>,
   },
-];
+]);
 
 const root = createRoot(document.getElementById("root")!);
-const render = (element: React.ReactNode) => {
-  root.render(<StrictMode>{element}</StrictMode>);
-};
-
-export const router = new Router<React.ReactNode>(routes, render);
+root.render(
+  <StrictMode>
+    <RouterContext.Provider value={router}>
+      <Outlet />
+    </RouterContext.Provider>
+  </StrictMode>
+);

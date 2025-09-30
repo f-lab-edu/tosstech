@@ -1,8 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Outlet } from "./router/react/Outlet";
-import { ReactRouter } from "./router/react/Router";
-import { RouterContext } from "./router/react/context";
+// import { Outlet } from "@tosstech/router/react/Outlet";
+import { Outlet, ReactRouter, RouterContext } from "@tosstech/router";
 
 import "./index.css";
 import { Home, Post } from "./pages";

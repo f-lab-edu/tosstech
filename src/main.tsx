@@ -5,15 +5,16 @@ import { ReactRouter } from "./router/react/Router";
 import { RouterContext } from "./router/react/context";
 
 import "./index.css";
+import { Home, Post } from "./pages";
 
 export const router = new ReactRouter([
   {
     path: "/",
-    element: <h1>Home</h1>,
+    element: <Home />,
   },
   {
     path: "/post/:id",
-    element: <h1>Post</h1>,
+    element: <Post />,
   },
 ]);
 

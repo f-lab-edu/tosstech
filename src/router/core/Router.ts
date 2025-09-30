@@ -1,33 +1,42 @@
-import type { MatchedRouteMetadata, Params, Route } from "./type";
+import type {
+  DependencyHistory,
+  DependencyLocation,
+  MatchedRouteMetadata,
+  Params,
+  Route,
+  RouterEventTarget,
+} from "./type";
 import { pathToRegex } from "./utils";
 
-class Router<TRoute extends Route> extends EventTarget {
+interface RouterDependencyObject {
+  location: DependencyLocation;
+  history: DependencyHistory;
+  eventTarget?: RouterEventTarget;
+}
+
+// 다른 환경에서 동작할수 있는 EventTarget 생성
+class CustomEventTarget implements RouterEventTarget {
+  dispatchEvent() {
+    return true;
+  }
+  addEventListener() {}
+  removeEventListener() {}
+}
+
+class Router<TRoute extends Route> {
   private routes: TRoute[];
   private currentRoute: TRoute | undefined;
-
   private params: Params = {};
 
-  readonly dispose: () => void;
+  public eventTarget: RouterEventTarget;
+  private dependencyObject: RouterDependencyObject;
 
-  constructor(routes: TRoute[]) {
-    super();
-
+  constructor(routes: TRoute[], dependencyObject: RouterDependencyObject) {
     this.routes = routes;
+    this.dependencyObject = dependencyObject;
+    this.eventTarget = dependencyObject.eventTarget ?? new CustomEventTarget();
+
     this.update();
-
-    const abortController = new AbortController();
-
-    window.addEventListener(
-      "popstate",
-      () => {
-        this.update();
-      },
-      {
-        signal: abortController.signal,
-      }
-    );
-
-    this.dispose = () => abortController.abort();
   }
 
   private getMatchedRoute(path: string): MatchedRouteMetadata<TRoute> | null {
@@ -43,8 +52,9 @@ class Router<TRoute extends Route> extends EventTarget {
     return null;
   }
 
-  private update() {
-    const matched = this.getMatchedRoute(window.location.pathname);
+  protected update() {
+    const pathname = this.dependencyObject.location.getPath();
+    const matched = this.getMatchedRoute(pathname);
 
     this.currentRoute = matched?.route;
     this.params = matched?.params ?? {};
@@ -55,7 +65,7 @@ class Router<TRoute extends Route> extends EventTarget {
       this.params = {};
     }
 
-    this.dispatchEvent(new Event("routechange"));
+    this.eventTarget.dispatchEvent(new Event("routechange"));
   }
 
   public getCurrentRoute() {
@@ -63,12 +73,12 @@ class Router<TRoute extends Route> extends EventTarget {
   }
 
   public navigate = (path: string): void => {
-    window.history.pushState(null, "", path);
+    this.dependencyObject.history.push(path);
     this.update();
   };
 
   public back = (): void => {
-    window.history.back();
+    this.dependencyObject.history.back();
     this.update();
   };
 

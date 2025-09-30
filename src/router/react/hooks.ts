@@ -10,7 +10,7 @@ export const useRouter = () => {
       router?.addEventListener("routechange", onChange, {
         signal: abortController.signal,
       });
-      return abortController.abort;
+      return () => abortController.abort();
     },
     () => router?.getCurrentRoute()
   );
